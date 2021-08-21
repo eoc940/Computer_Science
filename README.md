@@ -1,4 +1,8 @@
 ## Computer Science
+- https://github.com/WooVictory/Ready-For-Tech-Interview
+- https://github.com/gyoogle/tech-interview-for-developer
+- https://github.com/gyoogle/tech-interview-for-developer
+- 이외 제 블로그와 개인적인 공부 자료를 정리하여 업로드하고 있습니다
 
 ### Operating System
 - [운영체제란?](./Operating_System/Definition_Operation_System.md)
