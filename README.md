@@ -30,6 +30,7 @@
 - [SQL - Join](./Database/sql_join.md)
 - [SQL vs NOSQL](./Database/sql_nosql.md)
 - [이상(anomaly)](./Database/anomaly.md)
+- [정규화](./Database/normalization.md)
 - [Index](./Database/index.md)
 - [Transaction](./Database/transaction.md)
 - [Transaction 격리수준](./Database/transaction_apart.md)
