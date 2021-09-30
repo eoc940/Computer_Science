@@ -25,7 +25,8 @@
 
 ### Database
 - [데이터베이스 기본](./Database/basic.md)
-- [Key](./Database/key.md)
+- [데이터 모델링과 Key](./Database/key.md)
+- [관계 대수](./Database/relational_algebra.md)
 - [SQL Injection](./Database/sql_injection.md)
 - [SQL - Join](./Database/sql_join.md)
 - [SQL vs NOSQL](./Database/sql_nosql.md)
