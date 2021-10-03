@@ -30,6 +30,7 @@
 - [SQL Injection](./Database/sql_injection.md)
 - [SQL](./Database/sql_join.md)
 - [View](./Database/view.md)
+- [무결성 제약 조건과 접근 권한](./Database/dcl.md)
 - [SQL vs NOSQL](./Database/sql_nosql.md)
 - [이상(anomaly)](./Database/anomaly.md)
 - [정규화](./Database/normalization.md)
