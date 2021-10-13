@@ -149,3 +149,45 @@ gold등급의 할인율을 15로 올릴때 일부만 올린다면 갱신이상�
 ![image](https://user-images.githubusercontent.com/67304980/132000657-f733bd49-9254-4a9d-8682-2c8fa52aeef5.png)
 
 이렇게 고객 릴레이션과 고객등급 릴레이션으로 나누면 모두 제 3 정규형에 속하게 된다
+
+
+## 데이터베이스 설계 프로세스
+- ER 다이어그램을 릴레이션으로 변환을 통하여 생성
+- 모든 속성(Attributes)을 포함하는 하나의 릴레이션 - Universal Relation
+  - 정규화를 통해서 작은 테이블들로 분해된다
+- ad hoc 디자인을 통해서 생성
+  - 정규화를 통해서 테스트하고 좋은 디자인으로 변화
+
+### ER 다이어그램과 Normalization
+- ER 다이어그램이 모든 데이터를 잘 표현할 수 있게 설계되어 있다면 ER 다이어그램으로 생성된 테이블들은 추가적인 정규화 과정이 필요하지 않다
+- 그러나 실제 디자인에서는 키 속성이 아닌 속성(Attribute)에서 시작하는 함수적 종속성(functional dependency)이 있을 수 있고 이런 문제들을 정규화를 통해서 분해 과정을 거친다
+  - 예제) Employee (employee_id, name, department_name, building) { department_name } -> { building }
+
+### Denormalization
+- 정규화를 거쳐서 분해 된 테이블들을 조회할 때 분해되기 전 속성들을 볼 필요가 있다면 JOIN QUERY가 필요
+  - 아래 예제에서 Book의 전체 데이터를 조회할 때 Book, Author, Genre 테이블의 join query가 필요
+  - 만약 정규화 되기 전의 테이블이었다면 single table scan
+
+![image](https://user-images.githubusercontent.com/67304980/137078332-f3258aef-aa18-465b-ad45-0582d34e4be0.png)
+
+Denoralization의 특징을 정리하면 
+- 업데이트가 거의 발생하지 않으며 조회 성능이 중요한 어플리케이션에서 사용
+- 빠른 조회 성능 제공
+- 중복 데이터 저장으로 인해 저장 공간이 더 필요하게 되고 update가 느려진다
+- 어플리케이션에서 이상 현상 등이 발생하지 않게 추가적인 코딩이 필요
+
+대안적인 방법으로 Materialized View가 있다. 특징을 정리하면 
+- 필요한 속성들을 포함한 join query에 대한 materialized view을 생성한다
+- 테이블 형태로 저장되기 때문에 denormalization과 같은 성능 제공
+- 추가적인 저장 공간이 필요, view을 업데이트하는 cost가 필요
+- 그러나 어플리케이션에서 이상 현상에 대한 에러 처리가 필요 없음
+
+그렇다면 정규화 과정을 통해 발견 못하는 디자인 이슈들은? 
+- 새로운 데이터가 추가될 때마다 컬럼 추가가 필요한 경우
+- 새로운 데이터가 추가될 때마다 테이블 추가가 필요한 경우
+- 예제)
+  - Good design
+    - Earings (company_id, year, earning)
+  - Bad
+    - Earning_2019 (company_id, earning), Earning_2020 (company_id, earning)
+    - Earnings (company_id, earning_2019, earning_2020)
