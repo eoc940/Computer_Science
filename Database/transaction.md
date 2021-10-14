@@ -154,17 +154,168 @@ Deadlock이 발생한다. 일반적인 DBMS는 교착상태를 독자적으로 �
 - 한 테이블의 복수 행을 복수의 연결에서 순서 없이 갱신하면 교착상태가 발생하기 쉽다. 이 경우에는 테이블 단위의 잠금을
 획득해 갱신을 직렬화 하면 동시성이 떨어지지만 교착상태를 회피할 수 있다
 
+## <다른 정리>
+
+## 트랜잭션
+
+### 데이터 무결성
+- 데이터 무결성을 유지하기 위해 해결해야 할 문제들
+  - Atomic operation
+  - Concurrency control(병행 제어)
+  - 장애 후 Recovery(회복)
+
+- Consistent database state
+  - 데이터 무결성이 유지되어 데이터베이스 안의 데이터 간에 모순점이 없는 상태
+  - 일시적으로 inconsistency가 발생할 수 있으나 결국은 일관된 값으로 유지되어야 한다
+    - 예) 은행 계좌 이체
+
+- 트랜잭션
+  - 데이터 무결성을 지킴으로써 데이터베이스를 일관된 상태(consistent state)을 유지하기 위한 핵심 개념
+
+### Transaction
+- 트랜잭션은 다음의 data processing의 집합을 포함한 atomic operation(unit of work)
+  - 하나 이상의 read operation
+  - 하나 이상의 write operation
+  - 트랜잭션 안에서의 데이터 계산 operation
+
+### ACID
+- Atomicity
+  - 트랜잭션 안의 모든 operation이 실행되거나 모두 실패
+
+- Consistency
+  - 트랜잭션의 실행이 database의 무결성 유지
+
+- Isolation
+  - 동시에 실행되는 트랜잭션은 서로 독립적이다(또는 순차적으로 실행)
+
+- Durability
+  - 성공적으로 수행된 Transaction은 영원히 반영되어야 함을 의미
+
+![image](https://user-images.githubusercontent.com/67304980/137310292-584c80ab-6f1d-4d51-be52-74632b8abedc.png)
+
+
+## 트랜잭션 스케줄
+
+![image](https://user-images.githubusercontent.com/67304980/137310375-2082a57d-c1f0-4b35-a864-a7c404a692d0.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137310523-14bf7665-3fae-4ccc-94c5-6fef63d5792c.png)
+
+
+### Serial or Serializable schedules
+
+![image](https://user-images.githubusercontent.com/67304980/137310729-4f79c0dc-9177-4d84-820c-f2365b387cff.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137310769-d56177cc-1f35-4520-820a-4995df1a85de.png)
+
+
+### Conflict Serializability
+
+![image](https://user-images.githubusercontent.com/67304980/137311540-b25d6175-dc11-4a5d-a7b0-2b2f3d5185ee.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137311783-d7a0f18b-08c2-4ee0-a91d-52bdb9446cf8.png)
+
+### View Serializability
+
+![image](https://user-images.githubusercontent.com/67304980/137311978-be866dfd-7207-477b-bcb4-08bd11bd5921.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137312021-ffb38209-af25-4969-9933-2f4a2b0fba7b.png)
+
+### Precedence graph
+
+![image](https://user-images.githubusercontent.com/67304980/137312254-7ec850fa-438e-484b-95b7-cf04eb9a6013.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137312287-43b546bd-b8be-4e72-b0d5-f3477b7aad7f.png)
+
+
+### Recoverability
+
+![image](https://user-images.githubusercontent.com/67304980/137312696-29150a5e-b9d7-4d6c-b0da-73bea8c3808f.png)
 
 
 
+## Recovery
+
+### Crash Recovery(회복)
+- Recovery는 다음의 트랜잭션 특성과 관계가 있다
+  - Atomicity
+    - 트랜잭션의 operation들이 실행 중에 장애 발생하면 실행된 operation들은 rollback이 필요
+  - Durability
+    - 장애 후에도 commit된 트랜잭션의 데이터는 영원히 저장
+
+![image](https://user-images.githubusercontent.com/67304980/137312973-248d5b6b-7720-4c5f-9cf4-5f8e44ced59d.png)
+
+### Logging & Recovery
+- Recovery Algorithm은 장애 후 데이터베이스의 atomicity와 durability을 제공하는 기술
+- Log는 데이터베이스의 변경 내용을 저장하고 있는 파일
+
+![image](https://user-images.githubusercontent.com/67304980/137313138-34067041-a58a-4279-b28d-5c0cefaf1c5a.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137313178-07f02597-32d8-4d5b-9832-eb08d25055a7.png)
+
+### UNDO 
+
+#### UNDO logging
+- 모든 액션은 undo log record 생성(old 값을 포함)
+- Disk 업데이트하기 전에 log record를 disk에 적는다(WAL)
+- Commit 로그가 flush되기 전 트랜잭션의 모든 체인지는 Disk에 반영
+
+#### UNDO 예제
+
+![image](https://user-images.githubusercontent.com/67304980/137313635-6dcbc2d9-ec6f-48bf-a40e-03073c5aa8b5.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137313671-d2185d90-6fd6-4619-b82d-53497fc576de.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137313710-5ba774be-b75c-4e66-8b85-707332cbbf76.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137313762-6e152148-769c-42f1-8de7-addbc5c3749b.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137313803-e1d8c6bd-861b-415c-a7d0-802f8010f439.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137313842-f1329f61-5a82-4951-b61b-2cd08d88f048.png)
 
 
+### REDO 
+
+#### REDO logging
+- 모든 액션은 redo log record 생성(new 값을 포함)
+- Disk 업데이트하기 전에 log record를 disk에 적는다(WAL)
+- 모든 log를 commit할 때 flush한다
+- 체인지가 disk에 반영된 후에 END log record를 write
 
 
+#### REDO 예제
 
+![image](https://user-images.githubusercontent.com/67304980/137314289-cb0557eb-d987-4d8d-b739-b45dda38814e.png)
 
+![image](https://user-images.githubusercontent.com/67304980/137314317-598fef7c-8819-4800-aa6e-10a496494a07.png)
 
+![image](https://user-images.githubusercontent.com/67304980/137314366-98a1f895-a618-4366-84dc-82b7876b9a30.png)
 
+### Checkpoint
+- DBMS는 주기적으로 체크포인트를 생성하여 시스템 충돌 시 복구에 걸리는 시간을 최소화 -> Checkpoint log 작성
+- Fuzzy checkpoint
+  - checkpoint하는 동안 긴 시간을 다른 operation을 block하는 걸 막기 위해 checkpoint하는 동안 update는 허용하는 checkpoint 기술
 
+![image](https://user-images.githubusercontent.com/67304980/137314617-e7f961b6-b224-4b81-97b2-5df167b6ab7f.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137314662-121b7ced-8952-4c8b-b02d-6f0b2417bbdf.png)
+
+## 병행 제어
+
+### Lock Protocols
+
+![image](https://user-images.githubusercontent.com/67304980/137314797-45ef902b-e5b3-4515-9a94-19df96e49d64.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137314823-abf9a60a-7559-4e5d-bd56-4b9184ecd530.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137314863-956d83e3-cdd6-478b-9092-bea50355f691.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137314895-7b23e9aa-1f08-4f82-bc7b-75ad5a1bca30.png)
+
+### MVCC
+
+![image](https://user-images.githubusercontent.com/67304980/137314950-994ba2be-3713-4f2e-b06e-6c5bdab4f574.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137314967-5b85db7d-f917-4e6e-8fb5-4ef2dc169da4.png)
 
 
