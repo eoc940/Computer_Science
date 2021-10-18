@@ -135,15 +135,172 @@ SELECT 쿼리의 검색 속도를 빠르게 하는데 목적을 두고 있다
 
 
 
+## < 다른 정리 >
+
+## 스토리지와 파일 구조
+
+### DBMS Storage
+- DBMS는 데이터를 "hard" disk에 저장
+- Disk access가 DBMS의 성능에 중요한 문제
+    - READ : disk -> main memory 데이터 전송
+    - WRITE : memory -> disk 데이터 전송
+    - higher cost than memory access
+- Main memory에 모두 저장 못 하는 이유
+    - 비용 문제
+    - 메모리에 저장되는 데이터는 volatile(손상될 위험이 큼)
+- 효과적인 memory-disk 데이터 전송을 위한 Buffer management가 필요
+
+![image](https://user-images.githubusercontent.com/67304980/137704734-cfc5e2ec-d13e-4c0d-9ca9-37f6a9daac57.png)
+
+### Disk space management
+- DBMS에서 가장 낮은 layer에서 disk의 space를 관리
+- 상위 component에서 다음과 같은 request 요청
+    - allocate & de-allocate a page
+    - read & write a page
+- 성능을 위해 page들을 최대한 sequential하도록 allocation한다
+    - seek / rotation delay를 줄이기 위해
+
+### Buffer Management
+
+![image](https://user-images.githubusercontent.com/67304980/137705342-8a1a71ab-b3bf-4e4a-a50d-6850a3b8dbea.png)
+
+- Page buffering process
+    - Pool에서 page를 저장할 frame을 선택
+        - free frame이 있으면 선택
+        - 없는 경우, replacement policy(LRU)에 의해 오래된 frame unpin후에 frame 결정
+    - page를 disk에서 읽어 frame에 저장
+    - pin : pin_count++, page를 사용하는 사용자가 있음을 표시하기 위해, pin_count가 0인 경우만 replacement 대상
+    - 주소를 반환
+- Page 사용자는 사용이 끝나면 page에 대한 unpin을 불러주어야 한다
+    - 만약 업데이트 경우 dirty flag set
+- 읽는 page list가 예측되면 성능을 향상 위해 prefetch 기능 제공
+
+### Format in File
+
+#### Record formats : Fixed Length
+
+![image](https://user-images.githubusercontent.com/67304980/137706292-6ac12377-1a6a-4f91-ac68-52d5a098cf85.png)
+
+- Field 타입과 size에 대한 정보가 system catalog에 저장
+- 필요한 Field access할 때 pointer연산으로 빠르게 주소 반환
+
+![image](https://user-images.githubusercontent.com/67304980/137706658-3ae39fa2-da8e-4304-b825-5c341cf57dd4.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137706771-cf072efa-dd11-4c2d-a16a-0b2818623352.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137706956-95cecc06-8634-49b1-943d-78ab717732c6.png)
+
+## 인덱스
+- 특정 기준에 맞는 rows를 빠르게 찾기 위해 사용
+- Index trade-off
+    - Search 성능 향상
+    - 인덱스를 관리하는 비용 발생 - DML 성능 저하
+    - 인덱스를 저장하기 위한 space 사용 증가
+- Search Key
+    - Index에서 검색을 위해 사용되는 column 또는 column의 집합
+    - 한 테이블에서 다른 search key를 가지는 다수의 index 생성 가능
+
+### 인덱스를 만들 때 고려 사항
+- 인덱스가 언제 사용될 것인가?
+    - 정확하게 key와 일치하는 row들을 찾을 때 사용할 것인가?
+    - Range query에 사용하나? (values between, >, <= 등)
+    - 테이블에 모든 row들을 조회할 때 사용할 것인가?
+- 테이블이 얼마나 자주 업데이트 되는가?
+    - DML은 index 관리를 위한 update가 발생
+- 인덱스의 key가 super key인가 또는 primary key인가?
+- 하나의 key로 여러 row들이 가능한가? Unique or not
+
+### Tree(Ordered) Index VS Hash Index
+- Tree Index는 search key의 순서로 index entry가 정렬
+    - range query나 order by operation에 유리
+    - B + Tree가 주로 사용
+- Hash Index
+    - index entry의 위치를 hash function을 이용하여 bucket의 위치를 지정하여 저장
+    - search에 효율성 : O(1)
+    - DML이 발생할 때 index 관리에 유리
+
+### Index on SQL
+- DBMS 다음의 경우에 index를 생성한다
+    - Primary key
+    - unique constraint(열의 값들이 모두 다름)
+- Create index statement in SQL
+
+![image](https://user-images.githubusercontent.com/67304980/137708464-8f3df33c-e719-43d7-82fa-e656fda03175.png)
 
 
+## B+Tree 인덱스
+
+### B+Tree
+- DBMS에 index로 사용되는 tree structure
+- 같은 레벨의 모든 leaf 노드에 key와 실제 data pointer 저장
+- Components
+    - Root Node(적어도 두 개의 children을 가질 때)
+    - Non-leaf Node
+    - Leaf Node
+- 차수 n (Order n)는 노드 사이즈를 결정한다
+    - size of Node = (n+1)pointers + n key
+
+![image](https://user-images.githubusercontent.com/67304980/137709013-2f4a1838-498b-48d4-b4b5-6999ce5f2f49.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137709299-cc2a9f20-9791-4613-b29e-d26e0ca65287.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137709372-a934c681-ab56-44c7-bc8c-bb875c691a42.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137709475-9bfb0fdd-1397-4f92-affe-505851557a2d.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137709725-e20c5ff3-7593-4594-95f2-66315eb640f2.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137709936-bbc68bbf-c501-41f1-b73c-74062dca9e4c.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137710109-419a4451-314e-480a-942e-01419549012c.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137710140-426d46d5-2d65-4e34-b34d-ec69601dec18.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137710290-fa0fc848-cfc5-42c5-83ac-06310ec63173.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137710313-3e40b703-89bd-43db-8d3b-830af98d6cf8.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137710342-cd338b5f-e09f-46ac-9692-c2ad82e8c82e.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137710518-28d0e81a-d729-42c5-a9ae-6ff20a1fe13f.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137710555-6b1e6804-fc88-4aec-842f-dc95e615edb6.png)
+
+![image](https://user-images.githubusercontent.com/67304980/137710603-6ebab3a1-f7cb-4851-9e95-d15a17514e57.png)
 
 
+## 해쉬 인덱스
+
+- key에 대한 hash function을 통해 데이터 위치를 찾는 index
+- index entry들이 bucket이라는 단위로 저장된다
+- bucket을 할당하는 방법
+    - static hashing
+        - bucket을 고정된 수로 할당
+    - dynamic hashing
+        - 데이터 양에 따라 가변적으로 bucket을 늘려나간다
+
+![image](https://user-images.githubusercontent.com/67304980/137711262-cec34276-5879-4d05-990b-6adeb3dc2f5b.png)
+
+### Static Hashing
+- Hash function의 결과에 bucket수로 mod 연산하여 위치 결정
+- Bucket 수가 미리 정해져 있기 때문에 overflow 발생 가능
+    - Overflow chaining - linked list형태로 같은 hash key를 갖는 bucket을 연결한다
+
+![image](https://user-images.githubusercontent.com/67304980/137711669-25316354-5d3e-408f-8fe4-5ab1491e8d98.png)
 
 
+### Dynamic Hashing - Extensible Hashing
+- Static hashing과 달리 bucket 수를 동적으로 변경하면서 hashing하는 방법
+- Hashing function의 결과를 binary로 표현하여 bucket의 할당에 binary의 prefix을 사용
+    - if prefix = 0, 2<sup>0</sup>=1 bucket
+    - if prefix = 1, 2 bucket, prefix = 3, 2<sup>3</sup>=8
+- bucket이 overflow가 발생하면 hash function의 prefix를 늘려가며 bucket의 개수를 늘린다
 
+![image](https://user-images.githubusercontent.com/67304980/137712228-85d60f41-5cfa-417b-b916-eac83080838a.png)
 
+![image](https://user-images.githubusercontent.com/67304980/137712825-8e55b8e1-7d9f-4b73-9c93-5f4b782b754e.png)
 
+![image](https://user-images.githubusercontent.com/67304980/137712862-535c6c25-4416-404f-a7ed-a100e365c50c.png)
 
 
 
