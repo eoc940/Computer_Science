@@ -38,6 +38,8 @@
 - [Index](./Database/index.md)
 - [Transaction](./Database/transaction.md)
 - [Transaction 격리수준](./Database/transaction_apart.md)
+- [쿼리 프로세싱과 최적화](./Database/optimization.md)
+- [데이터베이스 최신 기술](./Database/newdatabase.md)
 
 ### Network
 - [OSI 7계층](./Network/osi7.md)
