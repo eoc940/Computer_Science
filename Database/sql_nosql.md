@@ -11,10 +11,10 @@
   1. 데이터는 **정해진 데이터 스키마에 따라 테이블에 저장**된다
   2. 데이터는 관계를 통해 여러 테이블에 분산된다
 
-데이터는 테이블에 레코드로 저장되는데, 각 테이블마다 명확하게 정의도니 구조가 있다. 해당 구조는 필드의 이름과 데이터 유형으로
+데이터는 테이블에 레코드로 저장되는데, 각 테이블마다 명확하게 정의된 구조가 있다. 해당 구조는 필드의 이름과 데이터 유형으로
 정의된다
 
-따라서 **스키마를 준수하지 않는 테이블에 추가할 수 없다.** 즉, 스키마를 수정하지 않는 이상은 정해진 구조에 맞는 레코드만
+따라서 **스키마를 준수하지 않는 레코드는 테이블에 추가할 수 없다.** 즉, 스키마를 수정하지 않는 이상은 정해진 구조에 맞는 레코드만
 추가가 가능한 것이 관계형 데이터베이스의 특징 중 하나이다
 
 또한, 데이터의 중복을 피하기 위해 **관계**를 이용한다
@@ -24,6 +24,11 @@
 하나의 테이블에서 중복 없이 하나의 데이터만을 관리하기 때문에 다른 테이블에서 부정확한 데이터를 다룰 위험이 줄어드는 장점이 있다
 
 ### NoSQL(비관계형 DB)
+- 우리가 지금까지 배운 데이터베이스는 RDBMS이다. RDBMS는 데이터의 ACID 속성을 가장 중요시하고 Entity(table)간의 referential constraint 등 테이블의 schema가 미리 정의되어 있다. Big data등 data set이 클 때 distributed database가 제안되긴 했지만 scalability에 이슈가 있다
+- DBMS가 제공하는 일부 기능(Consistency)을 포기하고 대신 단순한 그러나 확장성이 좋은 구조를 제공 - Distributed
+- 데이터에 대한 Schema를 지정하지 않기 때문에 쉬운 확장성 제공
+- SQL에 유사한 query language 제공
+- CAP theorem을 사용하여 ACID 속성 중의 일부를 완화
 - 말그대로 관계형 DB의 반대이다
 - 스키마도 없고 관계도 없다
 - NoSQL에서는 레코드를 문서(documents)라고 부른다
@@ -47,6 +52,20 @@
 하지만, 이러면 데이터가 중복되어 서로 영향을 줄 위험이 있다. 따라서 조인을 잘 사용하지 않고 자주 변경되지 않는 데이터일 때,
 NoSQL을 쓰면 상당히 효율적이다
 
+### CAP theorem
+- 분산시스템에서 다음과 같은 세가지 조건을 모두 만족하는 시스템은 존재할 수 없음을 증명한 정리
+- C (Consistency) : 모든 노드들이 같은 시점에 같은 값을 볼 수 있다(또는 에러). 일관성은 동시성 또는 동일성이라고도 하며 다중 클라이언트에서 같은 시간에 조회하는 데이터는 항상 동일한 데이터임을 보증하는 것을 의미한다. 이것은 관계형 데이터베이스가 지원하는 가장 기본적인 기능이지만 일관성을 지원하지 않는 NoSQL 을 사용한다면 데이터의 일관성이 느슨하게 처리되어 동일한 데이터가 나타나지 않을 수 있다. 느슨하게 처리된다는 것은 데이터의 변경을 시간의 흐름에 따라 여러 노드에 전파하는 것을 말한다. 이러한 방법을 최종적으로 일관성이 유지된다고 하여 최종 일관성 또는 궁극적 일관성을 지원한다고 한다. 각 NoSQL 들은 분산 노드 간의 데이터 동기화를 위해서 두 가지 방법을 사용한다. 첫번째로 데이터의 저장 결과를 클라이언트로 응답하기 전에 모든 노드에 데이터를 저장하는 동기식 방법이 있다. 그만큼 느린 응답시간을 보이지만 데이터의 정합성을 보장한다. 두번째로 메모리나 임시 파일에 기록하고 클라이언트에 먼저 응답한 다음, 특정 이벤트 또는 프로세스를 사용하여 노드로 데이터를 동기화하는 비동기식 방법이 있다. 빠른 응답시간을 보인다는 장점이 있지만, 쓰기 노드에 장애가 발생하였을 경우 데이터가 손실될 수 있다.
+
+- A (Availability) : 모든 request는 에러 없이 response를 받을 수 있다(최신 값을 return함은 보장 안함). 가용성이란 모든 클라이언트의 읽기와 쓰기 요청에 대하여 항상 응답이 가능해야 함을 보증하는 것이며 내고장성이라고도 한다. 내고장성을 가진 NoSQL 은 클러스터 내에서 몇 개의 노드가 망가지더라도 정상적인 서비스가 가능하다. 몇몇 NoSQL 은 가용성을 보장하기 위해 데이터 복제(Replication)을 사용한다. 동일한 데이터를 다중 노드에 중복 저장하여 그 중 몇 대의 노드가 고장나도 데이터가 유실되지 않도록 하는 방법이다. 데이터 중복 저장 방법에는 동일한 데이터를 가진 저장소를 하나 더 생성하는 Master-Slave 복제 방법과 데이터 단위로 중복 저장하는 Peer-to-Peer 복제 방법이 있다.
+
+- P (Partition tolerance) : network partition이 나서 message의 분실이 발생해도 시스템이 계속 동작해야 한다. 분할 허용성이란 지역적으로 분할된 네트워크 환경에서 동작하는 시스템에서 두 지역 간의 네트워크가 단절되거나 네트워크 데이터의 유실이 일어나더라도 각 지역 내의 시스템은 정상적으로 동작해야 함을 의미한다.
+
+- NoSQL은 consistency와 availability을 동시에 제공하지 않는다 - 불가능
+
+![image](https://user-images.githubusercontent.com/67304980/138116645-60fe03d1-45db-43a5-b87c-03a066615b86.png)
+
+
+
 ### 저장 방식에 따른 NoSQL 분류
 ```Key-Value Model```,```Document Model```,```Column Model```,```Graph Model```로 분류할 수 있다
 
@@ -58,7 +77,12 @@ NoSQL을 쓰면 상당히 효율적이다
 
 상당한 유연성을 제공하며 동일 데이터에서 메모리를 훨씬 덜 이용하므로 부하관리에 큰 이점이 있다. 단순한 저장구조를 가지기 때문에 복잡한 조회 연산을 지원하지 않는다. 고속 읽기와 쓰기에 최적화된 경우가 많다. 메모리를 저장소로 쓰는 경우, 아주 빠른 get과 put을 지원한다. value는 문자열이나 정수와 같은 원시 타입이 들어갈 수 있고, 또 다른 key/value가 들어갈 수도 있다
 
-ex) Redis, Oracle Coherence
+![image](https://user-images.githubusercontent.com/67304980/138117307-a0abed7c-a7f3-4b39-a31f-25fba4c05f6b.png)
+
+
+ex) CouchDB, Redis, Dynamo, Azure Customs DB
+
+사용 예제) session 정보 제공, 사용자 profile 등
 
 ### 2. Document Model
 키-값 모델을 개념적으로 확장한 구조로 하나의 키에 하나의 구조화된 문서를 저장(value에 Document라는 타입을 저장한다. XML, JSON, YAML 등이다)하고 조회한다. 논리적인 데이터 저장과 조회
@@ -73,7 +97,20 @@ ex) Redis, Oracle Coherence
 
 테이블의 스키마가 상당히 유동적으로 이루어질 수 있어서 레코드마다 각각 다른 스키마를 가질 수 있다. XML이나 JSON같은 도큐먼트를 이용해서 레코드를 저장한다 하여 DOCUMENT DATABASE라고 불린다. 트리형 구조로 데이터를 만들고 조회하기 딱 좋은 데이터베이스이다. 대표적으로 잘 알고있는 MongoDB, CouchDB, Azure Cosmos DB가 있다.
 
-ex) MongoDB, CouchDB, Riak
+![image](https://user-images.githubusercontent.com/67304980/138117922-35b3d1e8-9c0c-4a5c-8abc-eda28e011e58.png)
+
+- JSON같은 semi-structured data인 document를 저장/조회하는 데이터베이스
+- Key-Value store의 하위 클래스
+- Key-Value store와 달리 데이터베이스 내부에서 최적화를 지원하기 위해 document가 가진 metadata 정보 이용
+
+
+MongoDB 예시
+
+![image](https://user-images.githubusercontent.com/67304980/138118257-a21108f3-2ec4-47ca-9661-af732e89113d.png)
+
+
+
+ex) - MongoDB, Azure CosmosDB, Azure DocumentDB
 
 ### 3. Column Model
 하나의 키에 여러 개의 컬럼 이름과 컬럼 값의 쌍으로 이루어진 데이터를 저장하고 조회한다. 모든 컬럼은 항상 타임 스탬프
@@ -89,14 +126,25 @@ ex) MongoDB, CouchDB, Riak
 입력하고 조회하는 서비스를 구현할 때 가장 좋은 성능을 보인다. 채팅 내용 저장, 실시간 분석을 위한 데이터 저장소 등의 서비스 
 구현에 적합하다.
 
+![image](https://user-images.githubusercontent.com/67304980/138117522-1be1cc54-8439-4062-94ee-fa9b59cc72a0.png)
+- RDBMS와 비슷하게 wide-column store도 table, column, row 개념을 사용
+- RDBMS와의 차이점 : 각 rows가 다른 column list를 가질 수 있다
+- 2차원의 key-value store로 생각할 수 있다
+
+ex) AWS DynamoDB, Cassandra, Google Bigtable
+
 #### 4. Graph Database
 
 node들과 relationship들로 구성된 개념이다. key/value store 방식이며 모든 노드는 끊기지 않고 연결되어 있어야 한다. realtionship은 direction, type, start node, end node에 대한 속성들을 가진다.
 
 일반적으로 관계형 데이터베이스보다 퍼포먼스가 뛰어나며 유연한 데이터 처리와 유지보수가 용이한 것이 장점이다. SNS 구축에 사용하기 좋은 데이터베이스이다.
 
+![image](https://user-images.githubusercontent.com/67304980/138118455-9115bc44-961d-49a1-b1c4-cb5c6f80d903.png)
 
+- 데이터를 node, edge 및 property를 가지고 graph structure를 이용하여 저장하는 데이터베이스
+- Graph에서 데이터를 효율적으로 쿼리하기 위한 graph 데이터베이스 전용 query language가 존재 : Cypher, Gremlin
 
+ex) Neo4j, infinite Graph
 
 ### 확장 개념
 두 데이터베이스를 비교할 때 중요한 Scaling 개념도 존재한다
@@ -130,23 +178,26 @@ node들과 relationship들로 구성된 개념이다. key/value store 방식이�
 - 스키마가 없어서 유연하다. 언제든지 저장된 데이터를 조정하고 새로운 필드 추가가 가능하다
 - 데이터는 애플리케이션이 필요로 하는 형식으로 저장된다. 데이터를 읽어오는 속도가 빨라진다
 - 수직 및 수평 확장이 가능해서 애플리케이션이 발생시키는 모든 읽기/쓰기 요청 처리가 가능하다
+- 더 큰 데이터 볼륨을 처리하고 대기 시간을 줄이고 처리량을 개선하는 몇 가지 조합을 통해 데이터 액세스 성능을 개선
 
 #### [단점]
 - 유연성으로 인해 데이터 구조 결정을 미루게 될 수 있다
 - 데이터 중복을 계속 업데이트 해야 한다
 - 데이터가 여러 컬렉션에 중복되어 있기 때문에 수정시 모든 컬렉션에서 수행해야 한다(SQL에서는 중복 데이터가 없으므로
 한번만 수행이 가능)
+- 복잡한 relationship이 있는 테이블이 있는 경우 JOIN을 제공하지 않기 때문에 적합하지 않다
 
 ### SQL 사용이 더 좋을때
 - 관계를 맺고 있는 데이터가 자주 변경되는 애플리케이션의 경우
   - NoSQL에서는 여러 컬렉션을 모두 수정해야 하기 때문에 비효율적
 - 변경될 여지가 없고, 명확한 스키마가 사용자와 데이터에게 중요한 경우
 
+
 ### NoSQL 사용이 더 좋을때
 - 정확한 데이터 구조를 알 수 없거나 변경/확장이 될 수 있는 경우
 - 읽기를 자주 하지만, 데이터 변경은 자주 없는 경우
 - 데이터베이스를 수평으로 확장해야 하는 경우(막대한 양의 데이터를 다뤄야 하는 경우)
-
+- very large semi-structured data를 처리하는 애플리케이션에 적합 - Log Analysis, Social Networking Feeds, Time-based data
 
 
 
