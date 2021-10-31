@@ -1,25 +1,194 @@
 ## 무결성 제약 조건
 
-### Integrity Constraints(무결성 제약 조건) in CREATE TABLE
-![image](https://user-images.githubusercontent.com/67304980/135757911-3a268a7c-a2d2-40c2-808e-6595ba9fbea2.png)
-![image](https://user-images.githubusercontent.com/67304980/135757924-309bc3c1-d4d5-450f-b643-4e64ab2e5415.png)
+관계 데이터 모델에서 정의하고 있는 기본 제약 사항은 키와 관련한 무결성 제약조건(Integrity constraint)이다. 무결성은 데이터에 결함이 없는 상태, 즉 데이터를 정확하고 유효하게 유지하는 것이다. 무결성 제약조건의 주요 목적은 데이터베이스에 저장된 데이터의 무결성을 보장하고 데이터베이스의 상태를 일관되게 유지하는 것이다. 데이터베이스가 삽입, 삭제, 수정, 연산으로 상태가 변하더라도 무결성 제약조건은 반드시 지켜져야 한다
+
+### 개체 무결성
+- 기본키는 null값이 될 수 없음
+
+개체 무결성 제약조건은 기본키를 구성하는 모든 속성은 널 값을 가지면 안된다는 규칙이다. 관계 데이터 모델에서는 릴레이션에 포함되는 튜플들을 유일하게 구별해주고 각 튜블에 쉽게 접근할 수 있도록 릴레이션마다 기본키를 정의하는 기본키를 구성하는 속성 전체나 일부가 널 값이 되면 튜플의 유일성을 판단할 수 없기 때문에 본래의 목적을 상실하게 된다
 
 ### 참조 무결성
-![image](https://user-images.githubusercontent.com/67304980/135757954-8464cbbc-4d8b-4d39-861e-a493bac43270.png)
-![image](https://user-images.githubusercontent.com/67304980/135757972-1efa1295-bb5a-404c-8473-4a19c7ac6e2a.png)
-![image](https://user-images.githubusercontent.com/67304980/135757980-4536b0e8-379e-4036-9275-16a3fdcad96f.png)
+- 외래키는 참조할 수 없는 값을 가질 수 없음
+
+참조 무결성 제약조건은 외래키는 참조할 수 없는 값을 가질 수 없다는 규칙이다. 외래키는 다른 릴레이션의 기본키를 참조하는 속성이고 릴레이션 간의 관계를 표현하는 역할을 한다. 그런데 외래키가 자신이 참조하는 릴레이션의 기본키와 상관없는 값을 가지게 되면 두 릴레이션을 연관시킬 수 없어 외래키 본래의 의미가 없어진다
+
+### 도메인 무결성
+- 특정 속성값은 그 속성이 정의된 도메인에 속한 값이어야 함
+
+도메인 무결성은 데이터베이스에 삽입되는 데이터들의 제약조건을 의미한다. 각각 속성은 숫자, 문자 등의 도메인을 가지면 해당 도메인에 맞는 데이터를 삽입해야 한다. 그 뿐만 아니라 삽입되는 데이터를 제한하거나, 삽입되지 않을 경우 기본값, null 제한 등의 기능을 제공한다. 예를 들어 "성"에 대한 속성의 경우 입력되는 데이터를 "남","여"로 제한하여 그 외의 데이터가 삽입되는 경우를 제한할 수 있다
+
+### 키 무결성
+- 릴레이션에는 최소한 하나의 키가 존재해야 한다
+
+키는 관계 데이터베이스에서 튜플을 식별하기 위해 사용하는 속성이나 속성의 집합으로 데이터베이스의 검색 또는 참조 시에 사용된다. 키가 없다면 튜플을 식별하지 못하므로 데이터의 효율적 관리가 불가능하고, 무결성이 지켜지지 못한다
+
+### null 무결성
+- 특정 속성은 null값을 가질 수 없다
+ 
+null 무결성은 특정 속성값에는 null 값을 가질 수 없다는 규칙이다. 기본적으로 속성값으로 null을 가질 수 있는데 만약 "유저 아이디"처럼 중요한 정보에는 스키마를 정의할 때 해당 속성을 null 데이터가 올 수 없음을 미리 정의할 수 있다
+
+### 고유 무결성
+- 특정 속성값은 서로 달라야 함
+
+고유 무결성은 특정 속성에 삽입되는 데이터는 고유한 값을 가져야 한다는 규칙이다. 이말은 즉, 각 튜플에서 하나의 속성값은 중복된 값이 없는 각각 서로 다른 값을 가져야 한다는 의미이다. 예를 들어 이름, 나이, 사는 곳과 같은 속성은 튜플들이 서로 같은 값을 가질 수 있지만 고객 아이디의 경우 각 튜플이 서로 다른 값을 가져야 한다
+
+
+
+
 
 ## SQL DCL : 접근 권한
+- DCL은 데이터 제어어로서, 데이터의 보안, 무결성, 회복, 병행 수행 등을 정의하는데 사용한다
 
 ### GRANT
-![image](https://user-images.githubusercontent.com/67304980/135758019-331dc144-0b5f-4121-92fb-3ea6df04ec9b.png)
+- 사용자에게 권한을 부여하기 위한 명령어
+```
+-- 사용자 권한 부여 명령어
+GRANT ALL PRIVILEGES ON [dbname.table_name]TO [user@host] IDENTIFIEDBY 'my_password';
+ 
+-- 예제 (호스트 : 로컬호스트)
+GRANT ALL PRIVILEGES ON testDB.testTableTO myuser@localhost IDENTIFIEDBY 'testPassword';
+ 
+-- 예제 (호스트 : 원격 접속)
+GRANT ALL PRIVILEGES ON testDB.testTableTO myuser@'%' IDENTIFIEDBY 'testPassword';
+ 
+-- 예제 (호스트 : 아이피)
+GRANT ALL PRIVILEGES ON testDB.testTableTO myuse@192.168.0.100 IDENTIFIEDBY 'testPassword';
+```
+- GRANT 명령어 이후 설정한 권한을 적용해야 한다
+
+```
+-- 설정한 권한 적용 명령어
+FLUSH PRIVILEGES;
+```
 
 ### REVOKE
-![image](https://user-images.githubusercontent.com/67304980/135758037-90a64745-9e2f-4d6c-85de-b2b0fabbf4aa.png)
+- GRANT 명령어로 적용한 권한을 해제해주는 명령어이다
 
-#### GRANT / REVOKE 예제
-![image](https://user-images.githubusercontent.com/67304980/135758053-5df9f5f3-ef2e-4cac-b116-f15db00ad390.png)
+```
+-- 권한 해제 명령어(INSERT, UPDATE, CREATE 권한 해제)
+REVOKE insert,update,create ON [dbname.table_name] TO [user@host];
+ 
+-- 권한 해제 명령어(전체 권한 해제)
+REVOKE ALL ON [dbname.table_name] TO [user@host];
+```
+
+- 권한 해제가 잘 적용되었는지 확인하려면
+
+```
+-- 권한 확인 명령어
+SHOW GRANTS FOR [user@host];
+```
+
+
+### COMMIT
+- 작업한 결과를 물리적 디스크로 저장하고, 조작 작업이 정상적으로 완료되었음을 관리자에게 알려준다. 정상적으로 처리되었다면 이를 알려준다
+
+```
+-- 여러분이 INSERT, UPDATE, DELETE 등의 작업을 수행하였다고 가정...
+ 
+-- 이전 까지의 작업을 완전 저장하는 명령어
+COMMIT;
+```
+
+### ROLLBACK
+- 작업했던 내용을 원래의 상태로 복구하기 위한 명령이다. INSERT, UPDATE, DELETE와 같은 트랜잭션의 작업 내용을 취소할 수 있다
+- COMMIT 명령어를 사용하기 이전의 상태만 ROLLBACK이 가능하다. COMMIT을 하게 되면 물리디스크에 직접 저장하고 알리는 기능이므로, 이미 물리적으로는 이전의 상태가 저장되어 있지 않다는 의미이다. 따라서 이전 상태로 되돌릴 수 없다
+
+```
+-- 여러분이 INSERT, UPDATE, DELETE 등의 작업을 수행하였다고 가정...
+ 
+-- 이전 까지의 작업을 취소하는 명령어
+ROLLBACK;
+```
 
 ### ROLE
-![image](https://user-images.githubusercontent.com/67304980/135758064-6933ca3a-d6f0-469d-8f58-52512dc47b37.png)
 
+먼저 특권을 먼저 알아보자
+
+1. 시스템 특권
+- 데이터베이스를 관리하는 데 필요한 시스템 명령어를 사용하기 위해서는 시스템 특권을 부여받아야 한다.
+- 시스템 특권은 기본적으로 SYS 사용자가 소유하고 있으며 ADMIN 옵션을 통해 다른 사용자에게 부여할 수 있다
+
+![image](https://user-images.githubusercontent.com/67304980/139588244-59ee86c8-9a94-4c12-97c3-0dd3271ee93a.png)
+
+
+2. 스키마 객체 특권
+- 스키마 객체인 테이블, 뷰, 시퀀스, 동의어 등에 접근하는 것을 제어하는 권한이다
+
+![image](https://user-images.githubusercontent.com/67304980/139588276-a3468ea9-a749-420c-a1bc-7e21e985bf8f.png)
+
+- 시퀀스란?
+  - 자동으로 순차적으로 증가하는 순번을 반환하는 데이터베이스 객체이다. 보통 PK값에 중복값을 방지하기 위해 사용한다
+
+- 세션이란?
+  - 어떤 활동을 위한 시간이나 기간
+  - 오라클 데이터베이스 세션은 데이터베이스 접속을 시작으로, 여러 작업을 수행한 후 접속 종료까지의 전체 기간을 의미한다
+  - 세션 내부에는 하나 이상의 트랜잭션이 존재한다
+
+
+- CREATE ROLE 명령문으로 생성
+- 롤에 암호 부여 가능
+- 롤 이름은 사용자나 다른 롤과 중복될 수 없음
+
+```
+CREATE ROLE role [NOT IDENTIFIED | IDENTIFIED
+{BY password | EXTERNALLY}]
+```
+- NOT IDENTIFIED : 롤 활성화시 암호에 의한 검증 과정 생략
+- IDENTIFIED : 롤 활성화시 암호에 의한 검증 과정 필요
+- BY password : 롤 활성화시 사용되는 암호 지정
+- EXTERNALLY : 롤 활성화시 운영체제 인증을 통한 사용자 검증
+
+관리자 권한으로 로그인을 할 수있는 usercreate 롤을 생성 한후 scott 과 test 계정에게 부여하려한다면?
+```
+형식 :
+
+create role 생성시킬 롤이름;
+
+실행 결과 :
+
+SQL> create role usercreate;
+
+롤이 생성되었습니다.
+
+관리자 권한으로 로그인을 할 수있는 usercreate 롤을 생성 한후 scott 과 test 계정에게 부여하려한다면?
+
+형식 :
+
+create role 생성시킬 롤이름;
+
+실행 결과 :
+
+SQL> create role usercreate;
+
+롤이 생성되었습니다.
+
+다시 본론으로 들어가서 만들어 놓은 롤을 특정 계정에 부여해보자 바로 scott 과 test에게
+
+형식_
+
+grant 권한이 들어있는 롤명,,,, to 계정명1,, 계정명n
+
+실행 결과_
+
+SQL> grant usercreate to scott,test;
+
+권한이 부여되었습니다.
+
+위와 같이 부여가 완료되었고 이제부터 scott과 test 에게 권한이 부여가 되었다. 계정생성과 암호 부여까지 가능한 상태이다. 확실히 권한이 부여가 되었는지 해당 계정으로 로그인하여, imsi 라는 아이디에 t1234 라는 암호를 부여해보자.
+
+SQL> conn scott/tiger
+
+연결되었습니다.
+
+SQL> create user imsi identified by t1234;
+
+사용자가 생성되었습니다.
+```
+
+- 롤은 권한을 담는 그릇이기 때문에 부여해야 할 권한과 계정이 많은 경우에 권한들을 계정마다 하나씩 부여하지 않아도 된다는 장점이 있다
+- 많은 권한들을 일일이 유저들에게 몇개씩 노가다로 주는 것은 매우 귀찮다. 롤이라는 선물세트를 만들어 그 안에 유저들이 원하는 권한들만을 넣어 한번에 그 선물세트인 롤만 부여하면 훨씬 편하고 관리도 용이하다
+
+
+#### [나의 정리]
+> DCL은 크게 두 종류로 볼 수 있다. GRANT와 REVOKE의 경우 데이터베이스의 객체들을 사용할 수 있도록 사용자마다 권한을 주고 회수하는 것이 있다. 권한의 종류가 다양하고 유저도 많을 수 있다. 유저에게 일일이 권한을 부여하는 것은 매우 귀찮은 작업이므로, 유저들이 원하는 권한들로 ROLE이라는 권한의 집합을 만들고 유저에게 부여하면 권한 부여 작업이 간단해지고 효율적이다. 두 번째 종류는 TCL이라고도 불리는 COMMIT과 ROLLBACK이다. 논리적인 작업 단위로 묶어 DML들로 조작된 결과를 반영할지, 이전 상태로 되돌릴지에 대한 트랜잭션   
