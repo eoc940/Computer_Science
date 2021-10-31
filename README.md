@@ -1,10 +1,8 @@
-## Computer Science
-- https://github.com/WooVictory/Ready-For-Tech-Interview
-- https://github.com/gyoogle/tech-interview-for-developer
-- https://github.com/JaeYeopHan/Interview_Question_for_Beginner
-- 이외 제 블로그와 개인적인 공부 자료를 정리하여 업로드하고 있습니다
+## Data Structure & Algorithm
+- [자료구조와 알고리즘 with JAVA](https://github.com/eoc940/Java-data_structure-and-algorithm)
+- [자료구조와 알고리즘 with PYTHON](https://github.com/eoc940/Python-data_structure-and-algorithm_PS)
 
-### Operating System
+## Operating System
 - [운영체제란?](./Operating_System/Definition_Operation_System.md)
 - [컴퓨터 시스템의 동작 원리](./Operating_System/Computer_System.md)
 - [프로세스(Process) vs 쓰레드(Thread)](./Operating_System/Process_Thread.md)
@@ -23,7 +21,7 @@
 - [메모리](./Operating_System/memory.md)
 - [캐시의 지역성](./Operating_System/cache.md)
 
-### Database
+## Database
 - [데이터베이스 기본](./Database/basic.md)
 - [데이터 모델링과 Key](./Database/key.md)
 - [관계 대수](./Database/relational_algebra.md)
@@ -40,7 +38,7 @@
 - [Transaction 격리수준](./Database/transaction_apart.md)
 - [쿼리 프로세싱과 최적화](./Database/optimization.md)
 
-### Network
+## Network
 - [OSI 7계층](./Network/osi7.md)
 - [TCP](./Network/tcp.md)
 - [UDP](./Network/udp.md)
