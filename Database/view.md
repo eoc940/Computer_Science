@@ -1,29 +1,121 @@
 ## Views
 
-### View의 목적
-- 어떤 경우에 모든 사용자가 전체 논리적 모델(데이터베이스에 저장된 모든 실제 테이블)을 보는 건 문제가 될 수 있다
-- 필요한 데이터만 특정 사용자들에게 유출할 필요가 있을 때 사용
-  - employ 테이블에서 아이디, 이름, 부서 조회 가능하게 하지만 salary 정보를 숨기고 싶을 때
-- 질의문 작성을 쉽게 만들어 준다
-  - group by나 aggregation function 등을 미리 정의
-- 데이터 종속성 제거
-  - 응용프로그램은 뷰를 통해 접근함으로써 테이블 스키마 변화에 신경 쓸 필요가 없다
-
 ### View의 정의
-![image](https://user-images.githubusercontent.com/67304980/135713563-6282ff8e-7037-4882-a1a8-c5880fbdc2ca.png)
+- 뷰는 하나 이상의 테이블이나 다른 뷰의 데이터를 볼 수 있게 하는 데이터베이스 객체이다
+- 실제 데이터는 뷰를 구성하는 테이블에 담겨 있지만 뷰를 마치 테이블처럼 사용할 수 있다
+- 테이블 뿐만 아니라 다른 뷰를 참조해 새로운 뷰를 만들어 사용할 수 있다
+- 가상 테이블이다. 테이블은 디스크 공간이 할당되어 데이터를 저장할 수 있지만, 뷰는 데이터 딕셔너리 테이블에 뷰에 대한 정의만 저장
+- 저장하고 디스크에 저장 공간이 할당되지 않는다. 하지만 일반 사용자들은 SQL문을 사용하여 테이블에 저장된 데이터를 검색하고 조작하는 것과 유사하게 뷰를 이용할 수 있다
+- 하나의 select문이라고 생각하면 된다
+- 뷰 자체는 데이터를 갖지 않지만, 기초 테이블의 데이터를 조회하고 수정할 수 있는 창과 같다
+- 뷰는 데이터 값이 아니라 실제적으로는 질의 문장만을 가진다
+- 물리적인 테이블을 근거한 논리적인 테이블
+- 뷰는 기본 테이블에서 파생된 객체로서 기본 테이블에 대한 하나의 쿼리문(뷰테이블X, 뷰쿼리O)
+- 사용자에게 주어진 뷰를 통해서 기본 테이블을 제한적으로 사용하게 된다
 
-### View Expansion
-![image](https://user-images.githubusercontent.com/67304980/135713664-50b562a3-0217-4e67-85d4-24f062c6f662.png)
+### View의 목적
+- 보안적 목적
+  - 어떤 경우에 모든 사용자가 전체 논리적 모델(데이터베이스에 저장된 모든 실제 테이블)을 보는 건 문제가 될 수 있다
+  - 필요한 데이터만 특정 사용자들에게 유출할 필요가 있을 때 사용
+    - employ 테이블에서 아이디, 이름, 부서 조회 가능하게 하지만 salary 정보를 숨기고 싶을 때
+- 편의적 목적
+  - 여러 개의 테이블에서 필요한 정보를 뽑아 사용할 때가 많다. 이때 좀 더 편리하게 사용할 수 있는 방법중 하나가 뷰이다
+  - 질의문 작성을 쉽게 만들어 준다
+    - join이나 group by와 같은 복잡한 쿼리를 view로 저장시켜놓고 다음부터는 저장한 view의 정보만 가져오면 된다. 즉 일종의 함수라고 생각하면 된다
+  - 데이터 종속성 제거
+    - 응용프로그램은 뷰를 통해 접근함으로써 테이블 스키마 변화에 신경 쓸 필요가 없다
 
-### Updatable View
-![image](https://user-images.githubusercontent.com/67304980/135713708-366f1d81-336d-4f39-ba25-1909948c3225.png)
-![image](https://user-images.githubusercontent.com/67304980/135713713-b49742a8-b95f-420f-9e15-25d315f1d766.png)
+### View의 사용 예시
 
-### Materialized View
-![image](https://user-images.githubusercontent.com/67304980/135713724-7cc36b6d-1a2d-42be-b12e-42f6272730bf.png)
+#### 조회 쿼리 준비
+![image](https://user-images.githubusercontent.com/67304980/139576705-17ce3f22-5ee0-45ae-a30a-2738a1f6b7c0.png)
 
-### Drop View
-![image](https://user-images.githubusercontent.com/67304980/135713731-33ec8691-8432-4cc9-addb-49a63008d2bf.png)
+예를 들어 위와 같은 조회 쿼리문이 있다. 그런데 쿼리를 자주 사용해야 한다면 매번 SQL을 작성하기보다는 위 조회 쿼리문을 뷰로 만들어놓고 뷰를 참조하면 편리하다
+
+#### 뷰 생성
+
+![image](https://user-images.githubusercontent.com/67304980/139576760-fc03a902-e8a4-4c03-b944-ed94eeccf970.png)
+
+![image](https://user-images.githubusercontent.com/67304980/139576779-9099102c-b2df-4e02-93dd-f34a30ccc423.png)
+
+이렇게 V1이라는 뷰를 만들어 놓고 뷰를 SELECT하면
+
+![image](https://user-images.githubusercontent.com/67304980/139576808-c967f9c8-46c2-45dd-be81-53d13b66e1da.png)
+
+만들어둔 뷰에 설정해두었던 SELECT문이 잘 실행된다
+
+#### 뷰 수정
+
+![image](https://user-images.githubusercontent.com/67304980/139576834-689c1969-4f5f-487f-ae21-fc8b02da520b.png)
+
+![image](https://user-images.githubusercontent.com/67304980/139576843-f308e79a-8e6c-483f-aefa-cdbd3f80efaa.png)
+
+뷰 생성 및 수정은 CREATE OR REPLACE VIEW라고 기억하면 된다. CREATE는 생성, REPLACE는 수정인데 CREATE OR REPLACE라고 명시할 경우 타겟 뷰이름이 없을 경우 CREATE를 하고, 있을 경우 REPLACE를 한다. 사실 REPLACE또한 쿼리를 작성해야 하고 해당 뷰 이름이 있을 시 기존 뷰를 없애고 새로 생성하는 것이다. 따라서 ALTER를 하는 것이 아니라 DROP 후 SELECT 하는 것이다. 
+
+#### 뷰 조작 연산
+
+뷰는 테이블과 다름없이 select문을 사용할 수 있다. 그러나 insert, delete, update문 또한 사용할 수 있으나 상당한 제한이 있다. 기본적으로 모든 뷰가 삽입, 삭제, 갱신의 대상이 되는 것은 아니다. 
+
+
+student {sno(pk), sname, dept} 테이블이 있다고 하면
+
+CREATE VIEW student_view AS sno, dept FROM student;
+
+CREATE VIEW student_view AS sname, dept FROM student;
+
+2개의 뷰를 만들었다고 가정하고, 위의 뷰에 insert 작업은 가능하나, 밑의 뷰에 insert 작업은 불가능하다. 이유는 기본테이블의 pk가 sno인데, 밑의 뷰에 insert 작업을 하게 되면 기본키에 null값이 들어가기 때문에, 개체 무결성 제약 조건에 위배가 되기 때문이다. 일반적으로 뷰는 변경(삽입, 삭제, 갱신)을 할 수 없는 뷰와 이론적으로 변경이 가능한 뷰, 그리고 실제로 변경이 가능한 뷰로 구분할 수 있다
+
+![image](https://user-images.githubusercontent.com/67304980/139578605-9ce62155-f841-4c45-a574-a6d4ace4ccb0.png)
+
+뷰에 대한 변경 연산이 가능하려면 그 뷰는 기본적으로 어느 한 기본 테이블의 행과 열의 부분 집합으로만 정의되어야 한다. 그러나 적어도 다음과 같은 경우에는 변경이 허락되지 않는다
+
+- 뷰의 열이 상수나, 산술 연산자 또는 함수가 사용된 산술식으로 만들어지면, 변경이 허락되지 않는다
+- 집계 함수(AVG, COUNT, SUM, MAX, MIN)가 관련되어 정의된 뷰는 변경할 수 없다
+- DISTINCT, GROUP BY 또는 HAVING이 사용되어 정의된 뷰는 변경할 수 없다
+- 2개 이상의 테이블이 관련되어 정의된 뷰는 변경할 수 없다
+- 변경할 수 없는 뷰를 기초로 정의된 뷰는 변경할 수 없다
+
+
+
+
+#### 뷰 삭제
+
+![image](https://user-images.githubusercontent.com/67304980/139576882-d5d0c0fd-a4e6-450b-a028-14f8c21b1362.png)
+
+![image](https://user-images.githubusercontent.com/67304980/139576892-f5a69b13-6b68-4402-8abb-eb9af6bbdcc5.png)
+
+뷰 삭제 쿼리는 위와 같다. 뷰는 다른 테이블을 참조만 하고 있을 뿐이므로 뷰를 삭제하더라도 실제 뷰가 참조하고 있는 테이블에 있는 데이터는 삭제되지 않는다.
+
+#### 뷰 구조 확인
+
+![image](https://user-images.githubusercontent.com/67304980/139577085-073cb26c-facb-4752-844f-07d5e11c13de.png)
+
+![image](https://user-images.githubusercontent.com/67304980/139577092-5b551af5-a7f9-4a87-b58a-b01c17ed63fa.png)
+
+![image](https://user-images.githubusercontent.com/67304980/139577102-fb1b416c-d80e-41f3-8f98-b5f7af0e3b5b.png)
+
+### 뷰의 장단점과 사용 이유
+
+#### 장점
+- DB의 선택적인 부분만 보여주므로 접근을 제한
+- 복잡한 질의를 단순화
+- 데이터의 독립성 제공(뷰가 정의된 기본 테이블의 확장이나, 뷰가 속해 있는 데이터베이스에 테이블이 더 늘어나도 기존의 뷰를 사용하는 프로그램이나 사용자는 아무런 영향을 받지 않는다)
+- 동일한 데이터를 또 다른 뷰로 표현
+- 한 개의 뷰에 여러 테이블의 데이터를 검색 가능
+- 한 개의 테이블로부터 여러 뷰를 생성 가능
+- 여러 사용자의 다양한 데이터 요구 지원
+
+#### 단점
+- 뷰의 정의 변경 불가(ALTER문으로 변경 불가하고 DROP후 CREATE해야 한다)
+- 뷰는 삽입, 삭제, 갱신 연산에 많은 제한을 가지고 있다
+
+
+#### [나의 정리]
+> 뷰는 하나 이상의 테이블이나 뷰의 데이터를 볼 수 있게 하는 데이터베이스 객체이며 가상 테이블이다. 뷰를 사용하는 이유는 크게 두 가지 측면에서 장점이 있기 때문이다. 첫째로 보안적 측면에서, 사용자에게 전체 데이터베이스 구조를 보여주지 않고 일부만 보여주고 숨기고 싶은 정보를 보여주지 않음으로써 보안성을 높인다. 둘째로 편의적 측면에서, 질의문 작성을 편하게 만들어준다. 자주 사용하는 질의문을 뷰로 생성함으로써 이후의 반복적인 사용의 경우에 생성해둔 뷰를 사용할 수 있다. 일종의 함수처럼 사용할 수 있는 것이다. 또한 데이터에 대한 종속성이 제거된다. 테이블 스키마 변화에 신경 쓸 필요가 없기 때문이다. 단점으로는 뷰의 정의 변경이 불가하여 DROP후 CREATE해야하고, INSERT, UPDATE, DELETE연산에 제한이 있다.
+
+
+
+
 
 
 
