@@ -1,3 +1,38 @@
+### 데이터의 접근
+
+![image](https://user-images.githubusercontent.com/67304980/140454299-d70d1aad-2f75-4c5b-a59c-59ca25dc83dc.png)
+
+- 데이터의 접근은 이런 방식으로 이루어진다. 이런 경우 문제가 발생할 수 있다. 다음 그림을 보자
+
+![image](https://user-images.githubusercontent.com/67304980/140454391-1ecce9ba-3885-4ce8-842d-40da305ff937.png)
+- 하나의 주체가 읽어가고 반환하지 않았는데 다른 주체가 읽어서 처리하고 반환할 시 데이터의 값이 맞지 않는 결과가 초래될 수 있다
+
+#### OS에서 race condition이 언제 발생하는가?
+- 커널 수행 중 인터럽트 발생 시
+- 프로세스가 시스템 콜을 하여 커널 모드로 수행 중인데 컨텍스트 스위치가 일어나는 경우
+- 멀티프로세서에서 공유메모리 내의 커널 데이터
+
+![image](https://user-images.githubusercontent.com/67304980/140455062-183fc6d2-c1b1-4a06-b1ac-5f285e73b36c.png)
+- 커널모드 running 중 인터럽트가 발생하여 인터럽트 처리루틴이 수행
+    - 양쪽 다 커널 코드이므로 kernel address space 공유
+
+![image](https://user-images.githubusercontent.com/67304980/140455212-3003fd79-4e07-4f8a-a04a-d9538c312960.png)
+- 해결책은 커널 모드에서 수행 중일 때는 CPU를 preempt하지 않는다. 커널 모드에서 아용자 모드로 돌아갈 때 preempt
+
+![image](https://user-images.githubusercontent.com/67304980/140455456-856f4c05-6494-4459-ac57-4d370f2aa027.png)
+- 해결책1은 한번에 하나의 CPU만이 커널에 들어갈 수 있게 하는 방법
+- 해결책2는 커널 내부에 있는 각 공유 데이터에 접근할 때마다 그 데이터에 대한 lock/unlock을 하는 방법
+
+
+# 임계영역 문제
+- n개의 프로세스가 공유 데이터를 동시에 사용하기를 원하는 경우
+- 각 프로세스의 code segment에는 공유 데이터를 접근하는 코드인 **critical section**이 존재
+- Problem
+    - 하나의 프로세스가 critical section에 있을 때 다른 모든 프로세스는 critical section에 들어갈 수 없어야 한다
+
+![image](https://user-images.githubusercontent.com/67304980/140456257-3d874244-009f-4bad-9fe1-c5a0df5e12e0.png)
+
+
 ## 동기화 문제
 
 - 동기화 : 한정적인 시스템 자원에 여러 스레드가 동시에 접근해서 사용하면 문제가 발생할 수 있다. 이 문제를
