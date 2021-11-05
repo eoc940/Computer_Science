@@ -141,9 +141,24 @@ Q. Time quantum이 3일 때 평균 turnaround time, 평균 waiting time, 평균 
   - 해결책 : aging이다. 레디 큐에서 실행 안되고 오래 머문다면 해당 프로세스의 우선순위를 점진적으로 높여주는 것.
  
 
+### Thread Scheduling
+- Local Scheduling
+  - User level thread의 경우 사용자 수준의 thread library에 의해 어떤 스레드를 스케줄할지 결정. 운영체제는 스레드를 모르기 때문에 프로세스에 cpu를 주었을 때 프로세스 내부에서 어떻게 cpu를 스레드에게 줄지 결정
+- Global Scheduling
+  - Kernel level thread의 경우 일반 프로세스와 마찬가지로 커널의 단기 스케줄러가 어떤 스레드를 스케줄할지 결정. 운영체제가 스레드를 알고 있으므로 운영체제가 어떻게 스레드를 스케줄할지 결정
 
 
+### 알고리즘 평가
 
+![image](https://user-images.githubusercontent.com/67304980/140453830-15ab6157-43aa-4f0b-a3d0-c7eb6272e31b.png)
+
+- Queueing model
+  - 확률 분포로 주어지는 arrival rate와 service rate 등을 통해 각종 performance index 값을 계싼
+
+- 구현과 성능 측정
+  - 실제 시스템에 알고리즘을 구현하여 실제 작업(workload)에 대해서 성능을 측정 비교
+- 모의 실험
+  - 알고리즘을 모의 프로그램으로 작성후 trace를 입력으로 하여 결과 비교
 
 
 
